@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TrackBite — Adaptive Nutrition Telemetry for Fitbit</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#36393f",
+            "error-container": "#93000a",
+            "background": "#101418",
+            "surface-container": "#1d2025",
+            "secondary": "#ffb865",
+            "secondary-container": "#ca8013",
+            "outline-variant": "#3d4a42",
+            "on-surface": "#e1e2e9",
+            "on-primary-fixed-variant": "#005235",
+            "secondary-fixed-dim": "#ffb865",
+            "primary-fixed": "#7cfabe",
+            "primary": "#5ddda3",
+            "tertiary-fixed-dim": "#ffb3ae",
+            "on-primary-container": "#003d27",
+            "on-tertiary-container": "#70010d",
+            "primary-container": "#27b27c",
+            "surface-tint": "#5ddda3",
+            "on-tertiary-fixed-variant": "#8b191d",
+            "on-primary-fixed": "#002113",
+            "error": "#ffb4ab",
+            "tertiary": "#ffb3ae",
+            "on-secondary-container": "#3f2400",
+            "surface-variant": "#32353a",
+            "surface-container-high": "#272a2f",
+            "on-error-container": "#ffdad6",
+            "on-background": "#e1e2e9",
+            "on-error": "#690005",
+            "surface": "#101418",
+            "inverse-primary": "#006c48",
+            "surface-container-highest": "#32353a",
+            "inverse-surface": "#e1e2e9",
+            "tertiary-container": "#ff6f69",
+            "on-secondary-fixed-variant": "#673d00",
+            "on-secondary-fixed": "#2b1700",
+            "surface-dim": "#101418",
+            "on-secondary": "#482a00",
+            "on-surface-variant": "#bccabf",
+            "inverse-on-surface": "#2e3036",
+            "on-primary": "#003823",
+            "on-tertiary-fixed": "#410004",
+            "tertiary-fixed": "#ffdad7",
+            "surface-container-low": "#191c21",
+            "primary-fixed-dim": "#5ddda3",
+            "on-tertiary": "#68000b",
+            "secondary-fixed": "#ffddba",
+            "outline": "#86948a",
+            "surface-container-lowest": "#0b0e13"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "gutter-desktop": "1rem",
+            "margin": "1rem",
+            "margin-desktop": "1.5rem",
+            "space-xl": "1.5rem",
+            "space-md": "0.75rem",
+            "space-sm": "0.5rem",
+            "gutter": "0.75rem",
+            "space-lg": "1rem"
+          },
+          "fontFamily": {
+            "headline-xl-mobile": ["Inter"],
+            "body-lg": ["Inter"],
+            "telemetry-sm": ["JetBrains Mono"],
+            "body-sm": ["Inter"],
+            "label-caps": ["JetBrains Mono"],
+            "headline-lg": ["Inter"],
+            "telemetry-lg": ["JetBrains Mono"],
+            "telemetry-display": ["JetBrains Mono"],
+            "headline-md": ["Inter"],
+            "headline-xl": ["Inter"],
+            "telemetry-md": ["JetBrains Mono"],
+            "body-md": ["Inter"],
+            "headline-sm": ["Inter"]
+          },
+          "fontSize": {
+            "headline-xl-mobile": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "body-lg": ["1rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "telemetry-sm": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0em", "fontWeight": "500" }],
+            "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "label-caps": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.08em", "fontWeight": "600" }],
+            "headline-lg": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "telemetry-lg": ["1.75rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "telemetry-display": ["2.5rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-xl": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "telemetry-md": ["1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "body-md": ["0.875rem", { "lineHeight": "1.375rem", "letterSpacing": "0em", "fontWeight": "400" }],
+            "headline-sm": ["1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "500" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    body {
+      background-color: #0E1013;
+      color: #e1e2e9;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 1.125rem;
+      line-height: 1;
+      display: inline-block;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      background: #27B27C;
+      cursor: pointer;
+      border: 1px solid #101418;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      background: #27B27C;
+      cursor: pointer;
+      border: 1px solid #101418;
+    }
+  </style>
+</head>
+<body class="bg-[#0E1013] text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+<!-- TOP APP BAR -->
+<header class="docked full-width top-0 sticky z-50 flex justify-between items-center w-full px-margin-desktop h-14 bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant">
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="text-headline-sm font-headline-sm font-semibold tracking-tight text-on-surface dark:text-on-surface uppercase">TrackBite</span>
+<span class="material-symbols-outlined text-primary-container" data-icon="sensors" data-weight="fill" style="font-variation-settings: 'FILL' 1;">sensors</span>
+</div>
+<div class="hidden sm:flex items-center gap-space-xs px-2 py-0.5 rounded border border-outline-variant bg-surface-container-lowest">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">Fitbit Web API v1.2</span>
+</div>
+</div>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-space-lg">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors text-body-sm font-body-sm" href="#model">Architecture</a>
+<a class="text-primary dark:text-primary font-medium border-b border-primary dark:border-primary pb-1 text-body-sm font-body-sm" href="#feedback-loop">Physiological Model</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors text-body-sm font-body-sm" href="#logging">Logging Engines</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors text-body-sm font-body-sm" href="#validation">Clinical Specs</a>
+</nav>
+<!-- Header Actions -->
+<div class="flex items-center gap-space-sm">
+<button class="hidden lg:flex items-center gap-space-xs text-on-surface-variant hover:text-primary transition-colors text-body-sm font-body-sm px-3 py-1.5 border border-outline-variant rounded bg-surface-container-low">
+<span class="material-symbols-outlined text-outline" data-icon="terminal">terminal</span>
+<span>Docs</span>
+</button>
+<button class="cursor-pointer active:opacity-80 transition-opacity bg-primary-container text-on-primary-container font-medium text-body-sm font-body-sm px-4 py-2 rounded">
+        Connect Fitbit
+      </button>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-margin md:px-margin-desktop py-space-xl space-y-24">
+<!-- HERO SECTION -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-6" id="model">
+<!-- Left Column: Copy & Authority Metrics -->
+<div class="lg:col-span-6 space-y-6">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-outline-variant bg-surface-container-lowest">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">Wearable Biometric Architecture</span>
+</div>
+<h1 class="text-headline-xl font-headline-xl text-on-surface tracking-tight leading-tight">
+          Nutrition calibrated to your biometrics, not a generic calorie formula.
+        </h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant">
+          TrackBite synchronizes with your Fitbit Daily Readiness Score, Sleep Stages, and Active Zone Minutes to recalibrate your macro budget in real time.
+        </p>
+<div class="flex flex-wrap items-center gap-space-md pt-2">
+<button class="bg-primary-container hover:bg-primary-fixed transition-colors text-on-primary-container font-semibold text-body-sm font-body-sm px-5 py-2.5 rounded cursor-pointer">
+            Connect Fitbit
+          </button>
+<a class="px-5 py-2.5 rounded border border-outline-variant bg-surface-container-low hover:border-outline text-on-surface transition-colors text-body-sm font-body-sm" href="#feedback-loop">
+            Explore the Adaptive Model
+          </a>
+</div>
+<!-- Telemetry Verification Strip -->
+<div class="grid grid-cols-3 gap-3 pt-6 border-t border-outline-variant">
+<div>
+<div class="text-label-caps font-label-caps text-outline">SYNC FIDELITY</div>
+<div class="text-telemetry-md font-telemetry-md text-on-surface mt-0.5">99.4%</div>
+</div>
+<div>
+<div class="text-label-caps font-label-caps text-outline">POLLING FREQ</div>
+<div class="text-telemetry-md font-telemetry-md text-on-surface mt-0.5">15 min</div>
+</div>
+<div>
+<div class="text-label-caps font-label-caps text-outline">STANDARDS</div>
+<div class="text-telemetry-md font-telemetry-md text-on-surface mt-0.5">ISO / HIPAA</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Interactive Biometric Demo Widget Console -->
+<div class="lg:col-span-6 bg-[#16191E] border border-[#262A33] rounded-lg p-6 space-y-6">
+<!-- Console Header -->
+<div class="flex items-center justify-between border-b border-[#262A33] pb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#27B27C] animate-ping"></span>
+<span class="text-label-caps font-label-caps text-on-surface">Fitbit Charge 6 Synced</span>
+</div>
+<span class="text-label-caps font-label-caps text-outline border border-[#262A33] px-2 py-0.5 rounded bg-[#101418]">
+            Live Telemetry Engine
+          </span>
+</div>
+<!-- Dynamic Control Slider -->
+<div class="space-y-2 bg-[#121417] p-4 rounded border border-[#1E2229]">
+<div class="flex justify-between items-center">
+<span class="text-body-sm font-body-sm text-on-surface-variant">Last night's sleep duration</span>
+<span class="text-label-caps font-label-caps px-2 py-0.5 rounded border border-[#E09228]/40 bg-[#E09228]/10 text-[#E09228]" id="sleep-badge">
+              5.4h (Deficit detected)
+            </span>
+</div>
+<input class="w-full h-1.5 bg-[#262A33] rounded-lg appearance-none cursor-pointer accent-[#27B27C]" id="sleep-slider" max="9.0" min="4.0" step="0.1" type="range" value="5.4"/>
+<div class="flex justify-between text-label-caps font-label-caps text-outline pt-1">
+<span>4.0h</span>
+<span>5.0h</span>
+<span>6.0h</span>
+<span>7.0h</span>
+<span>8.0h</span>
+<span>9.0h</span>
+</div>
+</div>
+<!-- Telemetry Display Panel -->
+<div class="bg-[#101418] border border-[#262A33] p-4 rounded space-y-4">
+<div class="flex items-baseline justify-between">
+<span class="text-label-caps font-label-caps text-outline">RECALIBRATED EXPENDITURE</span>
+<span class="text-label-caps font-label-caps text-[#27B27C]">DYNAMIC OFFSET ACTIVE</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-telemetry-display font-telemetry-display text-on-surface tracking-tight" id="target-calories">2,580</span>
+<span class="text-telemetry-sm font-telemetry-sm text-outline">kcal</span>
+</div>
+<!-- Macros Row -->
+<div class="grid grid-cols-3 gap-2 border-t border-[#262A33] pt-3">
+<div>
+<div class="text-label-caps font-label-caps text-[#27B27C]">PROTEIN</div>
+<div class="text-telemetry-md font-telemetry-md text-on-surface" id="target-protein">185g</div>
+</div>
+<div>
+<div class="text-label-caps font-label-caps text-[#E09228]">CARBS</div>
+<div class="text-telemetry-md font-telemetry-md text-on-surface" id="target-carbs">260g</div>
+</div>
+<div>
+<div class="text-label-caps font-label-caps text-outline">FAT</div>
+<div class="text-telemetry-md font-telemetry-md text-on-surface" id="target-fat">65g</div>
+</div>
+</div>
+</div>
+<!-- Dynamic Explainer Banner -->
+<div class="bg-[#16191E] border border-[#262A33] border-l-4 border-l-[#E09228] p-3 text-body-sm font-body-sm text-on-surface-variant" id="explainer-banner">
+          +180 kcal &amp; +20g protein buffered to offset 5.4h sleep deficit and elevated cortisol.
+        </div>
+<!-- Diagnostic Sub-Indicators -->
+<div class="grid grid-cols-3 gap-2 pt-2 text-center">
+<div class="p-2 border border-[#262A33] rounded bg-[#101418]">
+<div class="text-label-caps font-label-caps text-outline">CORTISOL COMP</div>
+<div class="text-telemetry-sm font-telemetry-sm text-[#E09228] mt-1" id="cortisol-val">+8%</div>
+</div>
+<div class="p-2 border border-[#262A33] rounded bg-[#101418]">
+<div class="text-label-caps font-label-caps text-outline">GLYCOGEN SINK</div>
+<div class="text-telemetry-sm font-telemetry-sm text-on-surface mt-1" id="glycogen-val">Normal</div>
+</div>
+<div class="p-2 border border-[#262A33] rounded bg-[#101418]">
+<div class="text-label-caps font-label-caps text-outline">GHRELIN INDEX</div>
+<div class="text-telemetry-sm font-telemetry-sm text-[#D9534F] mt-1" id="ghrelin-val">1.24x</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: THE BIOMETRIC FEEDBACK LOOP -->
+<section class="space-y-8" id="feedback-loop">
+<div class="border-b border-outline-variant pb-4">
+<div class="text-label-caps font-label-caps text-primary-container mb-1">PHYSIOLOGICAL ENGINE</div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">How your wearable streams reshape your metabolic day</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Panel 1 -->
+<div class="bg-[#16191E] border border-[#262A33] p-6 rounded flex flex-col justify-between space-y-4">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-caps text-outline">ANS RECOVERY INDEX</span>
+<span class="w-2 h-2 rounded-full bg-[#E09228]"></span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Fitbit Daily Readiness Score</h3>
+<div class="text-telemetry-md font-telemetry-md text-[#E09228] bg-[#101418] px-3 py-2 border border-[#262A33] rounded">
+              Readiness: 42 / 100 · Low
+            </div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              When autonomic nervous system strain is elevated, TrackBite reduces heavy glycemic loads by 15% and increases electrolyte and leucine-rich protein targets to accelerate cellular muscle tissue recovery without gastrointestinal stress.
+            </p>
+</div>
+<div class="pt-4 border-t border-[#262A33]">
+<span class="text-label-caps font-label-caps text-outline">SPEC: HRV baseline + Resting Heart Rate delta</span>
+</div>
+</div>
+<!-- Panel 2 -->
+<div class="bg-[#16191E] border border-[#262A33] p-6 rounded flex flex-col justify-between space-y-4">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-caps text-outline">HORMONAL ARCHITECTURE</span>
+<span class="w-2 h-2 rounded-full bg-[#D9534F]"></span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Sleep Architecture (Deep &amp; REM)</h3>
+<div class="text-telemetry-md font-telemetry-md text-on-surface bg-[#101418] px-3 py-2 border border-[#262A33] rounded">
+              REM: 52m (14%) · Deep: 38m (10%)
+            </div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              Sleep fragmentation disrupts leptin and elevates daytime ghrelin by up to 24%. TrackBite automatically factors in compensatory hunger signaling, front-loading satiety-promoting dietary fiber and casein proteins.
+            </p>
+</div>
+<div class="pt-4 border-t border-[#262A33]">
+<span class="text-label-caps font-label-caps text-outline">SPEC: Fitbit Sleep Stages API + Sleep Efficiency Index</span>
+</div>
+</div>
+<!-- Panel 3 -->
+<div class="bg-[#16191E] border border-[#262A33] p-6 rounded flex flex-col justify-between space-y-4">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-caps text-outline">KINETIC EXPENDITURE</span>
+<span class="w-2 h-2 rounded-full bg-[#27B27C]"></span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Active Zone Minutes (AZM)</h3>
+<div class="text-telemetry-md font-telemetry-md text-[#27B27C] bg-[#101418] px-3 py-2 border border-[#262A33] rounded">
+              78 AZM · Cardio + Peak Zones
+            </div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              TrackBite quantifies muscle glycogen expenditure across heart rate zones, pacing post-workout carbohydrate intake into targeted 2-hour anabolic windows rather than arbitrary daily end-of-day sums.
+            </p>
+</div>
+<div class="pt-4 border-t border-[#262A33]">
+<span class="text-label-caps font-label-caps text-outline">SPEC: Real-time metabolic equivalent (MET) tracking</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: THREE-TIER FOOD LOGGING -->
+<section class="space-y-8" id="logging">
+<div class="border-b border-outline-variant pb-4">
+<div class="text-label-caps font-label-caps text-primary-container mb-1">ENGINEERED FOR ZERO FRICTION</div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Precision input methods calibrated to your macro targets</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Computer Vision Scanner -->
+<div class="bg-[#16191E] border border-[#262A33] p-6 rounded space-y-4 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-caps text-outline">ENGINE 01</span>
+<span class="material-symbols-outlined text-outline" data-icon="photo_camera">photo_camera</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Computer Vision Macronutrient Scanner</h3>
+<!-- Simulated Camera Interface -->
+<div class="relative bg-[#101418] border border-[#262A33] p-4 rounded h-44 flex flex-col justify-between overflow-hidden">
+<div class="absolute inset-2 border border-dashed border-[#262A33] pointer-events-none"></div>
+<!-- Bounding Box 1 -->
+<div class="relative z-10 border border-[#27B27C] bg-[#27B27C]/5 p-1.5 text-left rounded">
+<span class="text-label-caps font-label-caps text-[#27B27C] block">Wild Salmon fillet [98.2% conf]</span>
+<span class="text-telemetry-sm font-telemetry-sm text-on-surface">34g P / 12g F</span>
+</div>
+<!-- Bounding Box 2 -->
+<div class="relative z-10 border border-[#27B27C] bg-[#27B27C]/5 p-1.5 text-left rounded self-end">
+<span class="text-label-caps font-label-caps text-[#27B27C] block">Steamed Quinoa [96.4% conf]</span>
+<span class="text-telemetry-sm font-telemetry-sm text-on-surface">42g C / 6g P</span>
+</div>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+              Instant photographic volumetric recognition with confidence intervals and automatic macro calculation.
+            </p>
+</div>
+</div>
+<!-- Barcode Telemetry -->
+<div class="bg-[#16191E] border border-[#262A33] p-6 rounded space-y-4 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-caps text-outline">ENGINE 02</span>
+<span class="material-symbols-outlined text-outline" data-icon="barcode_scanner">barcode_scanner</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Sub-second Barcode Telemetry</h3>
+<!-- Simulated Barcode UI -->
+<div class="bg-[#101418] border border-[#262A33] p-4 rounded h-44 flex flex-col justify-center items-center space-y-3">
+<div class="w-full flex items-center justify-center gap-1.5 py-2 border-b border-[#262A33]">
+<div class="w-1 h-8 bg-on-surface"></div>
+<div class="w-2 h-8 bg-on-surface"></div>
+<div class="w-0.5 h-8 bg-on-surface"></div>
+<div class="w-1.5 h-8 bg-on-surface"></div>
+<div class="w-1 h-8 bg-on-surface"></div>
+<div class="w-2 h-8 bg-on-surface"></div>
+<div class="w-0.5 h-8 bg-on-surface"></div>
+</div>
+<div class="text-center">
+<div class="text-label-caps font-label-caps text-[#27B27C]">0.12s LATENCY LOOKUP</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant mt-1">Verified USDA &amp; OpenFoodFacts db</div>
+</div>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+              Scans packaged food products with instant cross-validation against laboratory-verified nutrient databases.
+            </p>
+</div>
+</div>
+<!-- Recipe Synthesis -->
+<div class="bg-[#16191E] border border-[#262A33] p-6 rounded space-y-4 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-caps text-outline">ENGINE 03</span>
+<span class="material-symbols-outlined text-outline" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Macro-Gap Dynamic Recipe Synthesis</h3>
+<!-- Simulated Recipe Suggestion Card -->
+<div class="bg-[#101418] border border-[#262A33] p-3.5 rounded h-44 flex flex-col justify-between">
+<div class="text-label-caps font-label-caps text-[#E09228]">REMAINING GAP: 42g P, 18g F</div>
+<div class="border-t border-[#262A33] pt-2">
+<div class="text-body-sm font-body-sm font-medium text-on-surface">Grilled Tempeh &amp; Avocado Bowl</div>
+<div class="text-telemetry-sm font-telemetry-sm text-on-surface-variant mt-0.5">44g P, 19g F</div>
+</div>
+<div class="text-label-caps font-label-caps text-[#27B27C] bg-[#27B27C]/10 border border-[#27B27C]/30 px-2 py-1 rounded">
+                PRECISION DELTA: +2g P, +1g F
+              </div>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+              Real-time algorithm calculates your remaining daily deficit or surplus and generates exact meal options to hit exact targets without mental math.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: CLINICAL VALIDATION METRIC BAND -->
+<section class="border border-outline-variant bg-[#16191E] rounded-lg p-8" id="validation">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-outline-variant">
+<div class="space-y-1">
+<div class="text-telemetry-display font-telemetry-display text-on-surface">4.8M+</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">Biometric days analyzed</div>
+<div class="text-label-caps font-label-caps text-outline">CONTINUOUS LOGGING</div>
+</div>
+<div class="space-y-1 md:pl-8 pt-4 md:pt-0">
+<div class="text-telemetry-display font-telemetry-display text-[#27B27C]">88%</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">Users hitting optimal macro distribution</div>
+<div class="text-label-caps font-label-caps text-outline">CLINICAL COHORT STUDY</div>
+</div>
+<div class="space-y-1 md:pl-8 pt-4 md:pt-0">
+<div class="text-telemetry-display font-telemetry-display text-on-surface">&lt; 150ms</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">Fitbit Web API webhook ingestion</div>
+<div class="text-label-caps font-label-caps text-outline">EVENT BUS BENCHMARK</div>
+</div>
+<div class="space-y-1 md:pl-8 pt-4 md:pt-0">
+<div class="text-telemetry-display font-telemetry-display text-on-surface">0</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">Untracked wearable drift</div>
+<div class="text-label-caps font-label-caps text-outline">STATE RECONCILIATION</div>
+</div>
+</div>
+</section>
+</main>
+<!-- TECHNICAL COMPLIANCE FOOTER -->
+<footer class="w-full px-margin-desktop py-space-xl border-t border-outline-variant dark:border-outline-variant bg-surface-container-lowest dark:bg-surface-container-lowest mt-16">
+<div class="max-w-7xl mx-auto space-y-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div class="text-headline-sm font-headline-sm font-semibold text-on-surface dark:text-on-surface uppercase">
+          TrackBite
+        </div>
+<div class="flex flex-wrap gap-4 text-body-sm font-body-sm">
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface transition-colors" href="#">HIPAA Audit Report</a>
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface transition-colors" href="#">GDPR Telemetry Protocol</a>
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface transition-colors" href="#">Fitbit Web API Disclosures</a>
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface transition-colors" href="#">Clinical Validation Specs</a>
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface transition-colors" href="#">API Status</a>
+</div>
+</div>
+<div class="text-body-sm font-body-sm text-outline border-t border-outline-variant pt-6 leading-relaxed">
+        © 2025 TrackBite Metabolic Telemetry Inc. All rights reserved. HIPAA Security Rule (45 CFR § 164.312) and GDPR Title IV compliant. Encrypted via AES-256 at rest and TLS 1.3 in transit. TrackBite is an independent physiological analytics platform and is not affiliated with, endorsed by, or sponsored by Fitbit LLC or Google LLC. Fitbit® is a registered trademark of Fitbit LLC.
+      </div>
+</div>
+</footer>
+<!-- INTERACTIVE BIOMETRIC CONSOLE CONTROLLER -->
+<script>
+    (function() {
+      const slider = document.getElementById('sleep-slider');
+      const badge = document.getElementById('sleep-badge');
+      const calories = document.getElementById('target-calories');
+      const protein = document.getElementById('target-protein');
+      const carbs = document.getElementById('target-carbs');
+      const fat = document.getElementById('target-fat');
+      const banner = document.getElementById('explainer-banner');
+      const cortisol = document.getElementById('cortisol-val');
+      const ghrelin = document.getElementById('ghrelin-val');
+      const glycogen = document.getElementById('glycogen-val');
+
+      function updateTelemetry(val) {
+        const sleepHours = parseFloat(val);
+        
+        if (sleepHours < 6.0) {
+          // Deficit State
+          badge.className = 'text-label-caps font-label-caps px-2 py-0.5 rounded border border-[#E09228]/40 bg-[#E09228]/10 text-[#E09228]';
+          badge.textContent = `${sleepHours.toFixed(1)}h (Deficit detected)`;
+          
+          calories.textContent = '2,580';
+          protein.textContent = '185g';
+          carbs.textContent = '260g';
+          fat.textContent = '65g';
+
+          banner.className = 'bg-[#16191E] border border-[#262A33] border-l-4 border-l-[#E09228] p-3 text-body-sm font-body-sm text-on-surface-variant';
+          banner.textContent = `+180 kcal & +20g protein buffered to offset ${sleepHours.toFixed(1)}h sleep deficit and elevated cortisol.`;
+
+          cortisol.textContent = '+8%';
+          cortisol.className = 'text-telemetry-sm font-telemetry-sm text-[#E09228] mt-1';
+          ghrelin.textContent = '1.24x';
+          ghrelin.className = 'text-telemetry-sm font-telemetry-sm text-[#D9534F] mt-1';
+          glycogen.textContent = 'Reduced tolerance';
+        } else if (sleepHours >= 6.0 && sleepHours < 7.5) {
+          // Moderate / Baseline State
+          badge.className = 'text-label-caps font-label-caps px-2 py-0.5 rounded border border-[#86948a]/40 bg-[#86948a]/10 text-[#e1e2e9]';
+          badge.textContent = `${sleepHours.toFixed(1)}h (Nominal baseline)`;
+
+          calories.textContent = '2,400';
+          protein.textContent = '165g';
+          carbs.textContent = '280g';
+          fat.textContent = '60g';
+
+          banner.className = 'bg-[#16191E] border border-[#262A33] border-l-4 border-l-[#86948a] p-3 text-body-sm font-body-sm text-on-surface-variant';
+          banner.textContent = `Baseline metabolic budget sustained. Autonomic tone balanced at ${sleepHours.toFixed(1)}h rest window.`;
+
+          cortisol.textContent = 'Baseline (0%)';
+          cortisol.className = 'text-telemetry-sm font-telemetry-sm text-on-surface mt-1';
+          ghrelin.textContent = '1.00x';
+          ghrelin.className = 'text-telemetry-sm font-telemetry-sm text-on-surface mt-1';
+          glycogen.textContent = 'Normal';
+        } else {
+          // Optimized / Supercompensation State
+          badge.className = 'text-label-caps font-label-caps px-2 py-0.5 rounded border border-[#27B27C]/40 bg-[#27B27C]/10 text-[#27B27C]';
+          badge.textContent = `${sleepHours.toFixed(1)}h (Full cellular recovery)`;
+
+          calories.textContent = '2,320';
+          protein.textContent = '160g';
+          carbs.textContent = '290g';
+          fat.textContent = '55g';
+
+          banner.className = 'bg-[#16191E] border border-[#262A33] border-l-4 border-l-[#27B27C] p-3 text-body-sm font-body-sm text-on-surface-variant';
+          banner.textContent = `Insulin sensitivity maximized via ${sleepHours.toFixed(1)}h deep rest. Complex carbohydrate allocation primed for peak training readiness.`;
+
+          cortisol.textContent = '-12%';
+          cortisol.className = 'text-telemetry-sm font-telemetry-sm text-[#27B27C] mt-1';
+          ghrelin.textContent = '0.92x';
+          ghrelin.className = 'text-telemetry-sm font-telemetry-sm text-[#27B27C] mt-1';
+          glycogen.textContent = 'Optimal replenishment';
+        }
+      }
+
+      slider.addEventListener('input', function(e) {
+        updateTelemetry(e.target.value);
+      });
+    })();
+  </script>
+</body></html>

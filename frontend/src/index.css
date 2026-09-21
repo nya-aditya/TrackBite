@@ -1,0 +1,128 @@
+/* TrackBite — Clinical Telemetry & Adaptive Nutrition Design System */
+
+:root {
+  --bg-ground: #0E1013;
+  --surface-panel: #16191E;
+  --surface-recessed: #121417;
+  --surface-active: #1C2027;
+  --border-subtle: #262A33;
+  --border-focus: #3A404E;
+  --border-strong: #4A5163;
+
+  /* Physiological Diagnostic Tokens */
+  --color-sage: #27B27C;
+  --color-sage-dim: rgba(39, 178, 124, 0.12);
+  --color-sage-border: rgba(39, 178, 124, 0.35);
+
+  --color-ochre: #E09228;
+  --color-ochre-dim: rgba(224, 146, 40, 0.12);
+  --color-ochre-border: rgba(224, 146, 40, 0.35);
+
+  --color-coral: #D9534F;
+  --color-coral-dim: rgba(217, 83, 79, 0.12);
+  --color-coral-border: rgba(217, 83, 79, 0.35);
+
+  /* High-Contrast Foreground Typography */
+  --text-chalk: #F1F3F7;
+  --text-muted: #8A92A2;
+  --text-dim: #5A6170;
+
+  /* Fonts */
+  --font-interface: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-telemetry: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: var(--bg-ground);
+  color: var(--text-chalk);
+  font-family: var(--font-interface);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg-ground);
+  color: var(--text-chalk);
+  overflow-x: hidden;
+}
+
+/* Typography Utilities */
+.font-interface {
+  font-family: var(--font-interface);
+}
+
+.font-telemetry {
+  font-family: var(--font-telemetry);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reset buttons and inputs */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+}
+
+/* Precision Slider Styling */
+.telemetry-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  outline: none;
+}
+
+.telemetry-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--color-sage);
+  border: 2px solid var(--bg-ground);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.telemetry-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--color-sage);
+  border: 2px solid var(--bg-ground);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.telemetry-slider.deficit::-webkit-slider-thumb {
+  background: var(--color-ochre);
+}
+.telemetry-slider.severe-deficit::-webkit-slider-thumb {
+  background: var(--color-coral);
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

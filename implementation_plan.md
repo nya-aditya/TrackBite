@@ -1,140 +1,122 @@
-# Implementation Plan: TrackBite — Wearable-Integrated Nutrition & Recovery Platform
+# Implementation Plan: TrackBite — Fitbit-Powered Adaptive Nutrition & Recovery Platform
 
-Build **TrackBite**, a modern, high-performance, dark-mode wellness web application that connects wearable physiological data (Sleep, HRV, Strain, Heart Rate, Activity) with real-time adaptive nutrition targets, frictionless AI photo food logging, barcode scanning, macro-aware recipe matching, and recovery correlation analytics.
+Build **TrackBite**, an adaptive nutrition web application tailored specifically for **Fitbit** users (with extensible architecture for other wearables in the future). TrackBite pulls and simulates Fitbit's core biometric signals (**Daily Readiness Score, Sleep Stages [Deep, Light, REM, Awake], Active Zone Minutes (AZM), Heart Rate Variability (HRV), Resting Heart Rate, and Calorie Expenditure**) to dynamically adjust daily nutrition targets in real-time, accompanied by frictionless multi-modal food logging (AI photo, barcode, database) and macro-gap recipe matching.
 
 ---
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Key Architecture Decisions**:
-> 1. **Technology Stack**: React 19 + TypeScript + Vite + Lucide Icons + Canvas/SVG Visualizers with custom Vanilla CSS design tokens (Sleek dark mode inspired by Whoop, Oura, and Apple Fitness).
-> 2. **AI Photo Logging Simulation & Integration**: Built-in intelligent computer vision simulation engine with bounding box detection, portion estimation, and nutritional breakdown. Also equipped with pre-loaded instant demo meals and custom file/camera upload.
-> 3. **Wearable Sync Engine**: Comprehensive multi-device sync manager (Fitbit / Google Health API, Whoop 4.0, Apple Health, Oura Ring) with a live Wearable Simulator to test dynamic macro recalculations under various physiological conditions (e.g., sleep deprivation, high strain workout days).
-> 4. **Adaptive Nutrition Algorithm**: Dynamic TDEE + Sleep & Recovery Readiness Spoil/Recovery adjustment + Active Strain Replenishment formula.
+> **Fitbit-First Focus & Extensible Architecture**:
+> 1. **Fitbit Biometrics Integration**: The platform is centered on Fitbit's proprietary metrics:
+>    - **Daily Readiness Score (0–100)**: Used as the primary signal for physiological strain vs. recovery.
+>    - **Fitbit Sleep Score & Stages**: Deep sleep %, REM %, duration vs. target, restlessness index.
+>    - **Active Zone Minutes (AZM) & Cardio Load**: Fitbit's signature intensity metric driving active carbohydrate and calorie replenishment.
+>    - **Stress Management Score & HRV (RMSSD)**: Influencing micronutrient prompts and protein protection under high stress.
+> 2. **Extensibility**: Data models use a generic `WearableDevice` interface with `'fitbit'` as the active and fully wired provider, with placeholders/stubs for `'whoop' | 'oura' | 'apple_health'` in future releases.
+> 3. **Fitbit Sync & Simulation Engine**: Includes simulated Fitbit Web API OAuth connection, sync timestamps, battery level, device model (e.g., *Fitbit Charge 6*, *Fitbit Sense 2*, *Fitbit Inspire 3*), and an interactive **Fitbit Live Biometrics Simulator** to test how changing Fitbit metrics dynamically recalibrates daily nutrition targets.
 
 ---
 
 ## Proposed Changes
 
-```
-TrackBite/
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── public/
-│   ├── favicon.svg
-│   └── demo-meals/
-├── src/
-│   ├── main.tsx
-│   ├── App.tsx
-│   ├── index.css
-│   ├── types/
-│   │   ├── wearable.ts        # Wearable data, metrics, sleep stages, devices
-│   │   ├── nutrition.ts       # Foods, meals, macros, targets, logged items
-│   │   ├── recipe.ts          # Recipes, ingredients, macro matching scores
-│   │   └── user.ts            # User profile, goals, onboarding state
-│   ├── services/
-│   │   ├── adaptiveEngine.ts  # Dynamic adaptive calorie/macro calculation algorithm
-│   │   ├── wearableService.ts # Wearable sync simulator & OAuth manager
-│   │   ├── visionAiService.ts # AI food image recognition & portion analysis
-│   │   ├── foodDatabaseService.ts # 100+ verified food items & USDA lookup
-│   │   ├── barcodeService.ts  # Barcode scanner simulator & database
-│   │   ├── recipeService.ts   # Macro-gap recipe recommendation engine
-│   │   └── storageService.ts  # LocalStorage persistence & initial mock seeding
-│   ├── context/
-│   │   └── AppContext.tsx     # Unified reactive state (User, Wearable, Logs, Settings)
-│   ├── components/
-│   │   ├── Navigation/
-│   │   │   ├── Header.tsx     # Wearable sync badge, quick action bar, date picker
-│   │   │   └── NavTabs.tsx    # Bottom/Sidebar navigation (Dashboard, Log, Recipes, Trends, Wearables)
-│   │   ├── Dashboard/
-│   │   │   ├── RecoveryHero.tsx       # Whoop/Oura-grade Recovery & Strain score rings
-│   │   │   ├── AdaptiveTargetCard.tsx # Dynamic target explainer badge (+X kcal for recovery)
-│   │   │   ├── MacroRings.tsx         # Circular animated macro progress (Calories, P, C, F, Water)
-│   │   │   ├── MealTimeline.tsx       # Daily meal logs with breakdown & quick-add
-│   │   │   └── SmartNudgeBanner.tsx   # Circadian & recovery-based actionable tips
-│   │   ├── Logging/
-│   │   │   ├── PhotoLoggingModal.tsx  # Camera/upload AI scanner with bounding boxes & portions
-│   │   │   ├── BarcodeScannerModal.tsx# Interactive camera barcode scanner simulator
-│   │   │   ├── ManualSearchModal.tsx  # Fast searchable food database with portion selector
-│   │   │   ├── QuickAddModal.tsx      # Quick macro entry
-│   │   │   └── FavoritesList.tsx      # 1-click re-logging for recent/favorite foods
-│   │   ├── Recipes/
-│   │   │   ├── RecipeMatcher.tsx      # "Fill Your Remaining Macros" smart filter
-│   │   │   └── RecipeDetailModal.tsx  # Ingredients, prep instructions, 1-click log meal
-│   │   ├── Analytics/
-│   │   │   ├── RecoveryVsNutritionChart.tsx # Correlation: Sleep/HRV vs Calorie/Sugar intake
-│   │   │   ├── MacroAdherenceChart.tsx      # 7-day and 30-day compliance trends
-│   │   │   └── StrainEnergyBalance.tsx      # Daily active burn vs intake balance
-│   │   ├── Wearables/
-│   │   │   ├── WearableManager.tsx    # Connected devices (Fitbit, Whoop, Oura, Apple Health)
-│   │   │   └── LiveSimulatorDrawer.tsx# Sliders for Sleep, REM, HRV, Strain to test live adaptation
-│   │   ├── Onboarding/
-│   │   │   └── OnboardingModal.tsx    # Multi-step onboarding (Goals, metrics, wearable connect)
-│   │   └── Common/
-│   │       ├── CircularProgress.tsx   # SVG animated concentric gauges
-│   │       ├── Modal.tsx              # Glassmorphic modal backdrop
-│   │       └── Toast.tsx              # Action feedback notifications
-```
+### 1. Types & Data Models
+* **`src/types/wearable.ts`**:
+  - `FitbitDeviceModel`: `'charge_6' | 'sense_2' | 'versa_4' | 'inspire_3' | 'luxe'`
+  - `FitbitDailyReadiness`: score (0-100), state (`'low' | 'moderate' | 'optimal'`), components (sleep, hrv, restingHeartRate)
+  - `FitbitSleepData`: totalDurationMinutes, sleepScore, deepMinutes, remMinutes, lightMinutes, awakeMinutes, efficiencyPercent
+  - `FitbitActivityData`: activeZoneMinutes, fatBurnMinutes, cardioMinutes, peakMinutes, steps, totalCaloriesBurned, activeCalories
+  - `FitbitMetricSnapshot`: timestamp, readiness, sleep, activity, hrvRmssd, restingHeartRate
+  - Extensible `WearableDevice` interface with provider enum (`'fitbit' | 'whoop' | 'oura' | 'apple_health'`) and active provider flag.
+
+* **`src/types/nutrition.ts`**:
+  - Macronutrient profile (calories, proteinG, carbsG, fatG, fiberG, sugarG, sodiumMg, waterMl)
+  - Meal slots: `breakfast`, `lunch`, `dinner`, `snack`
+  - `LoggedFoodItem`, `FoodItem`, `MealLog`, and `DailyTarget`
+  - `AdaptiveAdjustment`: specific explanations of adjustments made based on Fitbit metrics (e.g., `+180 kcal and +22g Carbs from 45 Active Zone Minutes`).
+
+* **`src/types/recipe.ts`**:
+  - Recipe interface with macros per serving, cook time, dietary tags, ingredient list, and dynamic `macroMatchScore` based on remaining daily targets.
 
 ---
 
-## Key Features & User Workflows
+### 2. Computational Services
+* **`src/services/adaptiveEngine.ts`**:
+  - Computes baseline TDEE using Mifflin-St Jeor equation + activity multiplier.
+  - Modulates daily targets based on **Fitbit Daily Readiness**:
+    - *Readiness < 40*: Prioritize muscle recovery, increase protein target by +10%, boost anti-inflammatory hydration +500ml, recommend easier-to-digest carbs.
+    - *Readiness 40–75*: Moderate baseline adaptation.
+    - *Readiness > 75*: Prime for high-intensity training, full carb fueling.
+  - Modulates targets based on **Fitbit Active Zone Minutes & Active Calories**:
+    - Adds active burn directly to caloric budget with carbohydrate replenishment ($0.05\text{g} \text{ carbs per active kcal}$).
+  - Modulates targets based on **Fitbit Sleep Score**:
+    - Sleep deficit (<6.5h or sleep score < 70): Adds metabolic stabilization buffer (+150 kcal) to mitigate cortisol spikes and midday energy dips.
+  - Generates clear, human-readable rationale strings (e.g. *"Fitbit synced 8:15 AM: +310 kcal & +25g carbs added due to 52 Active Zone Minutes & 88% Readiness Score"*).
 
-### 1. Adaptive Daily Targets Algorithm
-- **Baseline TDEE Calculation**: Mifflin-St Jeor equation modulated by target goal (Fat Loss: -20% deficit, Muscle Gain: +10% surplus, Maintenance: 0%, Performance: +5% with higher carb partition).
-- **Physiological Adaptation Layer**:
-  - **Recovery Score < 45% (Poor Recovery / Low Sleep)**: Protein target increased by +10% to protect lean muscle under cortisol stress, anti-inflammatory micronutrient prompts, carb timing shifted to daytime, hydration goal +500ml.
-  - **Sleep Duration Deficit (<6.5h)**: +150-250 kcal adjustment to prevent metabolic sluggishness and support energy balance.
-  - **Daily Strain & Active Burn**: Dynamic active calorie addition ($1.0 \times \text{Active Burn}$) + extra carbohydrates for glycogen replenishment ($0.05\text{g} \times \text{Active kcal}$).
-- **Target Explainer Banner**: Transparently explains *why* targets shifted today (e.g. *"⚡ +280 kcal & +18g Carbs added: 8.2h sleep but high strain (15.4) workout detected"*).
+* **`src/services/wearableService.ts`**:
+  - Fitbit-centric sync service: manages connected Fitbit device status, last sync timestamp, battery percentage, mock OAuth sync states.
+  - Live simulation presets:
+    - *High Strain Cardio Day* (Readiness: 62, AZM: 68 mins, Burn: 840 kcal, Sleep: 7.5h)
+    - *Poor Sleep Recovery Day* (Readiness: 32, AZM: 10 mins, Burn: 150 kcal, Sleep: 5.1h)
+    - *Peak Readiness Athlete* (Readiness: 94, AZM: 45 mins, Burn: 550 kcal, Sleep: 8.8h)
+    - *Rest & Recovery Day* (Readiness: 78, AZM: 8 mins, Burn: 120 kcal, Sleep: 8.2h)
+  - Live interactive parameter updater for immediate recalculation.
 
-### 2. Multi-Modal Frictionless Food Logging
-- **AI Photo Logging**:
-  - Image upload or camera snapshot.
-  - Multi-item detection with simulated vision bounding boxes and confidence scores.
-  - Interactive portion slider (grams / servings) with instant recalculation of macros.
-  - 6 preloaded realistic demo meals (Avocado Egg Toast, Salmon Quinoa Bowl, Protein Berry Smoothie, Ribeye & Sweet Potato, Greek Chicken Salad, Oatmeal Power Bowl) for immediate testing.
-- **Barcode Scanner**:
-  - Interactive camera viewport with simulated barcode target overlay.
-  - Quick-select barcodes for popular foods (e.g., Fairlife Core Power, Quest Bar, Chobani Greek Yogurt, Oats, Almond Milk).
-- **Searchable Database**:
-  - Instant fuzzy search over 100+ common foods with custom portion sizes.
-- **Favorites & Recents**:
-  - 1-click re-logging for rapid breakfast/lunch entries.
+* **`src/services/foodDatabaseService.ts`**:
+  - 100+ verified foods with accurate macro breakdowns per standard serving/100g.
+  - Fast instant client-side search with category and portion filtering.
 
-### 3. Smart Recipe Recommendations Filtered by Remaining Macros
-- Real-time calculation of remaining Calories, Protein, Carbs, and Fats.
-- Intelligent ranking algorithm matching recipes that fit precisely into remaining budget without exceeding limits.
-- "1-Click Log Entire Recipe" to instantly push ingredients into today's food log.
+* **`src/services/visionAiService.ts`**:
+  - AI photo food logging simulator: multi-item detection with bounding boxes, confidence percentages, and 6 instant demo meal presets.
 
-### 4. Wearable Integration & Live Simulation Hub
-- Connect flows for **Fitbit (Google Health API)**, **Whoop 4.0**, **Apple Health**, and **Oura Ring Gen 3**.
-- Real-time OAuth connection toggles and last-synced indicators.
-- **Live Simulator Drawer**: Interactive sliders allowing users to manipulate Sleep Time, Deep Sleep %, REM %, Resting HR, HRV (ms), and Workout Strain, triggering instant live recalculation of their daily nutrition targets.
+* **`src/services/barcodeService.ts`**:
+  - Barcode scanner simulator with barcode detection overlay and quick-test items.
 
-### 5. Recovery & Nutrition Correlation Analytics
-- Interactive canvas/SVG charts showing:
-  - **Sleep Quality vs. Next-Day Sugar/Calorie Intake** (visualizing the physiological impact of sleep deprivation on cravings).
-  - **Protein Adherence vs. Readiness Score Trends**.
-  - **Weekly Caloric Balance vs. Body Weight/Energy Level**.
+* **`src/services/recipeService.ts`**:
+  - Recipe library and intelligent ranking that scores recipes based on how cleanly they fit remaining macros without exceeding thresholds.
+
+* **`src/services/storageService.ts`**:
+  - LocalStorage persistence for user profile, food logs, Fitbit sync preferences, and custom recipes.
+
+---
+
+### 3. Application State & Styling
+* **`src/context/AppContext.tsx`**:
+  - Global state managing active user, Fitbit snapshot & sync status, food logs for current day, active modal dialogs, and toast notifications.
+* **`src/index.css`**:
+  - Dark-mode wellness UI inspired by Fitbit / modern health tech (teal `#00B0B9` Fitbit signature accents, slate dark backgrounds, glassmorphism, glowing concentric progress rings, smooth micro-interactions).
+
+---
+
+### 4. UI Components
+* **Navigation**:
+  - `Header.tsx`: Fitbit device badge with live sync status, battery %, last sync timestamp, and quick-add button.
+  - `NavTabs.tsx`: Bottom/side navigation between **Dashboard**, **Food Log**, **Smart Recipes**, **Fitbit Sync & Analytics**.
+* **Dashboard**:
+  - `RecoveryHero.tsx`: Circular Fitbit Daily Readiness gauge, Active Zone Minutes bar, and Sleep Quality badge.
+  - `AdaptiveTargetCard.tsx`: Explains the dynamic target delta calculated from today's Fitbit biometrics.
+  - `MacroRings.tsx`: Concentric animated SVG rings for Calories, Protein, Carbs, Fats, and Water.
+  - `MealTimeline.tsx`: Categorized logs (Breakfast, Lunch, Dinner, Snacks) with quick food addition and macro breakdown.
+  - `SmartNudgeBanner.tsx`: Contextual nutrition tips based on Fitbit Readiness & Sleep.
+* **Fitbit Hub & Live Simulator**:
+  - `WearableManager.tsx`: Focused on Fitbit (device selection, auto-sync toggle, battery, sync log), with "Coming Soon" badges for Whoop/Oura/Apple Health.
+  - `LiveSimulatorDrawer.tsx`: Sliders for Readiness (0-100), Sleep Duration, Deep/REM %, Active Zone Minutes, and Resting HR to instantly simulate biometric changes.
+* **Logging System**:
+  - `PhotoLoggingModal.tsx`, `BarcodeScannerModal.tsx`, `ManualSearchModal.tsx`, `QuickAddModal.tsx`.
+* **Recipes**:
+  - `RecipeMatcher.tsx`: "Fill remaining macros" filter and recipe cards with 1-click log.
+* **Analytics**:
+  - `RecoveryVsNutritionChart.tsx`: Fitbit Readiness & Sleep score vs. daily caloric and sugar adherence.
 
 ---
 
 ## Verification Plan
 
-### Automated Build & Typecheck
-- Run `npm run build` or `tsc --noEmit` to verify type safety and zero compilation errors.
-- Run dev server and verify assets load cleanly.
+### Automated Build
+* `npm run build` (`tsc && vite build`) to ensure 100% type safety and clean bundling.
 
-### Manual Verification Flow
-1. **Onboarding Flow**: Complete onboarding step-by-step, set goal (e.g. Lean Muscle Gain), connect Fitbit wearable, verify initial targets.
-2. **Wearable Live Adaptation**: Open the Wearable Simulator, switch preset to "Poor Sleep / High Strain", verify that the dashboard instantly adapts targets with an explanatory badge.
-3. **AI Photo Food Logging**: Test photo log with demo meals and uploaded pictures, verify bounding boxes, adjust portion grams, confirm meal log into Lunch.
-4. **Barcode Scanning**: Open Barcode Scanner, scan a test item (e.g., Protein Shake), verify instant nutrition auto-fill.
-5. **Macro Rings & Timeline**: Verify circular rings update in real-time as items are added/deleted.
-6. **Smart Recipes**: Check that recipe suggestions rank based on remaining daily macros and test 1-click meal logging.
-7. **Trends View**: Navigate to Analytics and verify interactive correlation charts.
-8. **Persistence**: Refresh page to ensure all logged meals and wearable state persist via LocalStorage.
+### Manual Verification
+1. **Fitbit Status & Simulation**: Verify Fitbit sync indicator in Header; open Simulator, drag Readiness slider from 85 down to 30, and confirm targets adjust dynamically with a Fitbit-branded explainer badge.
+2. **Food Logging**: Log foods via AI Photo simulation, Barcode simulator, and manual search; confirm macro rings update.
+3. **Recipe Matching**: Check recipe recommendations adapt to remaining macros.
+4. **Device Management**: Verify Fitbit connection screen with future-device placeholders.

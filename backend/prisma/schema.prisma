@@ -1,0 +1,123 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                    String             @id @default(uuid())
+  name                  String
+  email                 String             @unique
+  age                   Int
+  gender                String             // "male" | "female" | "other"
+  heightCm              Float
+  weightKg              Float
+  targetWeightKg        Float
+  primaryGoal           String             // "fat_loss" | "muscle_gain" | "maintenance" | "athletic_performance"
+  activityLevel         String             // "sedentary" | "light" | "moderate" | "very_active" | "athlete"
+  dietaryPreference     String             @default("none")
+  dailyWaterGoalMl      Int                @default(2500)
+  isAutoAdaptiveEnabled Boolean            @default(true)
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  telemetries           DailyTelemetry[]
+  mealLogs              MealLog[]
+  adaptivePlans         AdaptivePlan[]
+}
+
+model DailyTelemetry {
+  id                  String   @id @default(uuid())
+  userId              String
+  date                String   // "YYYY-MM-DD"
+  sleepHours          Float
+  sleepEfficiency     Float?
+  restingHeartRate    Int?
+  hrv                 Float?
+  strainScore         Float?
+  recoveryScore       Float?
+  activeCaloriesBurned Int?
+  steps               Int?
+  source              String   @default("fitbit")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+model FoodItem {
+  id          String         @id @default(uuid())
+  name        String
+  brand       String?
+  servingSize Float
+  servingUnit String
+  calories    Float
+  proteinG    Float
+  carbsG      Float
+  fatG        Float
+  fiberG      Float?
+  isVerified  Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  logItems    MealLogItem[]
+}
+
+model MealLog {
+  id        String        @id @default(uuid())
+  userId    String
+  date      String        // "YYYY-MM-DD"
+  mealType  String        // "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK"
+  notes     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     MealLogItem[]
+
+  @@index([userId, date])
+}
+
+model MealLogItem {
+  id         String   @id @default(uuid())
+  mealLogId  String
+  foodItemId String
+  quantity   Float    @default(1.0)
+  calories   Float
+  proteinG   Float
+  carbsG     Float
+  fatG       Float
+
+  mealLog    MealLog  @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
+  foodItem   FoodItem @relation(fields: [foodItemId], references: [id])
+}
+
+model AdaptivePlan {
+  id                   String   @id @default(uuid())
+  userId               String
+  date                 String   // "YYYY-MM-DD"
+  baselineCalories     Int
+  adjustedCalories     Int
+  baselineProteinG     Int
+  adjustedProteinG     Int
+  baselineCarbsG       Int
+  adjustedCarbsG       Int
+  baselineFatG         Int
+  adjustedFatG         Int
+  sleepBufferKcal      Int      @default(0)
+  sleepBufferProteinG  Int      @default(0)
+  strainAdjustmentKcal Int      @default(0)
+  explanation          String
+  status               String   @default("ACTIVE")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}

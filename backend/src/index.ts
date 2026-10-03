@@ -5,6 +5,7 @@ import usersRouter from './routes/users';
 import telemetryRouter from './routes/telemetry';
 import mealsRouter from './routes/meals';
 import planRouter from './routes/plan';
+import activitiesRouter from './routes/activities';
 import { prisma } from './lib/prisma';
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/telemetry', telemetryRouter);
 app.use('/api/meals', mealsRouter);
 app.use('/api/plan', planRouter);
+app.use('/api/activities', activitiesRouter);
 
 // Global Error Handler
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
@@ -42,7 +44,7 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 
 const server = app.listen(PORT, () => {
   console.log(`🚀 TrackBite Backend API listening at http://localhost:${PORT}`);
-  console.log(`⚡ Connected to SQLite via Prisma singleton`);
+  console.log(`⚡ Connected to PostgreSQL via Prisma singleton`);
 });
 
 // Graceful Shutdown

@@ -25,7 +25,7 @@ export type AppModalType =
   | 'recipe_detail'
   | null;
 
-export type AppNavTab = 'dashboard' | 'logs' | 'recipes' | 'simulator' | 'analytics';
+export type AppNavTab = 'dashboard' | 'logs' | 'activities' | 'recipes' | 'simulator' | 'analytics';
 
 interface AppContextValue {
   user: UserProfile;

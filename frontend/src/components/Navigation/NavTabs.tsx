@@ -7,6 +7,7 @@ export const NavTabs: React.FC = () => {
   const tabs: { id: AppNavTab; label: string; badge?: string }[] = [
     { id: 'dashboard', label: 'Today Dashboard' },
     { id: 'logs', label: 'Meal Logs' },
+    { id: 'activities', label: 'Activities & GPS', badge: 'Map' },
     { id: 'recipes', label: 'Smart Recipes', badge: 'AI Match' },
     { id: 'simulator', label: 'Fitbit Simulator' },
     { id: 'analytics', label: 'Telemetry Trends' },

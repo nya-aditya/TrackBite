@@ -18,6 +18,7 @@ import { QuickAddModal } from './components/Logging/QuickAddModal';
 import { LiveSimulatorDrawer } from './components/Wearables/LiveSimulatorDrawer';
 import { WearableManager } from './components/Wearables/WearableManager';
 import { RecipeDetailModal } from './components/Recipes/RecipeDetailModal';
+import { ActivitiesView } from './components/Activities/ActivitiesView';
 import { Toast } from './components/Common/Toast';
 
 const AppContent: React.FC<{ onBackToLanding: () => void }> = ({ onBackToLanding }) => {
@@ -57,6 +58,12 @@ const AppContent: React.FC<{ onBackToLanding: () => void }> = ({ onBackToLanding
           <>
             <PersonaSwitcher />
             <MealTimeline />
+          </>
+        )}
+
+        {activeNavTab === 'activities' && (
+          <>
+            <ActivitiesView />
           </>
         )}
 

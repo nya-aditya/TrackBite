@@ -1,14 +1,21 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CircularProgress } from '../Common/CircularProgress';
 
 export const MacroRings: React.FC = () => {
   const { adaptiveTarget, consumedMacros, remainingMacros, user } = useApp();
 
-  const caloriePct = Math.round((consumedMacros.calories / adaptiveTarget.adjustedCalories) * 100);
-  const proteinPct = Math.round((consumedMacros.proteinG / adaptiveTarget.adjustedProteinG) * 100);
-  const carbsPct = Math.round((consumedMacros.carbsG / adaptiveTarget.adjustedCarbsG) * 100);
-  const fatPct = Math.round((consumedMacros.fatG / adaptiveTarget.adjustedFatG) * 100);
+  const safePct = (val: number, target: number) => {
+    if (!target || target <= 0 || isNaN(val)) return 0;
+    return Math.max(0, Math.round((val / target) * 100));
+  };
+
+  const { caloriePct, proteinPct, carbsPct, fatPct } = useMemo(() => ({
+    caloriePct: safePct(consumedMacros.calories, adaptiveTarget.adjustedCalories),
+    proteinPct: safePct(consumedMacros.proteinG, adaptiveTarget.adjustedProteinG),
+    carbsPct: safePct(consumedMacros.carbsG, adaptiveTarget.adjustedCarbsG),
+    fatPct: safePct(consumedMacros.fatG, adaptiveTarget.adjustedFatG),
+  }), [consumedMacros, adaptiveTarget]);
 
   return (
     <div

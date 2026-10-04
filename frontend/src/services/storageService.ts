@@ -28,17 +28,35 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
   onboardingCompleted: true,
 };
 
+const isStorageAvailable = (): boolean => {
+  try {
+    const testKey = '__trackbite_test__';
+    window.localStorage.setItem(testKey, testKey);
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export function loadUserProfile(): UserProfile {
+  if (!isStorageAvailable()) return DEFAULT_USER_PROFILE;
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && parsed.id) {
+        return { ...DEFAULT_USER_PROFILE, ...parsed };
+      }
+    }
   } catch (e) {
-    console.error('Failed to load user profile from storage', e);
+    console.warn('Failed to parse user profile from storage, reverting to default', e);
   }
   return DEFAULT_USER_PROFILE;
 }
 
 export function saveUserProfile(profile: UserProfile): void {
+  if (!isStorageAvailable()) return;
   try {
     localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
   } catch (e) {
@@ -47,16 +65,23 @@ export function saveUserProfile(profile: UserProfile): void {
 }
 
 export function loadWearableDevice(): WearableDevice {
+  if (!isStorageAvailable()) return INITIAL_WEARABLE_DEVICE;
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.WEARABLE_DEVICE);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && parsed.id) {
+        return { ...INITIAL_WEARABLE_DEVICE, ...parsed };
+      }
+    }
   } catch (e) {
-    console.error('Failed to load wearable device from storage', e);
+    console.warn('Failed to parse wearable device from storage, reverting to default', e);
   }
   return INITIAL_WEARABLE_DEVICE;
 }
 
 export function saveWearableDevice(device: WearableDevice): void {
+  if (!isStorageAvailable()) return;
   try {
     localStorage.setItem(STORAGE_KEYS.WEARABLE_DEVICE, JSON.stringify(device));
   } catch (e) {
@@ -65,17 +90,24 @@ export function saveWearableDevice(device: WearableDevice): void {
 }
 
 export function loadTelemetrySnapshot(): FitbitMetricSnapshot {
+  if (!isStorageAvailable()) return createSnapshotFromPreset(TELEMETRY_PRESETS[0]);
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.TELEMETRY_SNAPSHOT);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && parsed.readiness) {
+        return parsed;
+      }
+    }
   } catch (e) {
-    console.error('Failed to load telemetry snapshot from storage', e);
+    console.warn('Failed to parse telemetry snapshot from storage, reverting to default', e);
   }
   // Default to optimal preset
   return createSnapshotFromPreset(TELEMETRY_PRESETS[0]);
 }
 
 export function saveTelemetrySnapshot(snapshot: FitbitMetricSnapshot): void {
+  if (!isStorageAvailable()) return;
   try {
     localStorage.setItem(STORAGE_KEYS.TELEMETRY_SNAPSHOT, JSON.stringify(snapshot));
   } catch (e) {
@@ -84,12 +116,20 @@ export function saveTelemetrySnapshot(snapshot: FitbitMetricSnapshot): void {
 }
 
 export function loadMealLogs(): MealLog[] {
+  if (!isStorageAvailable()) return getInitialMealLogs();
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.MEAL_LOGS);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
   } catch (e) {
-    console.error('Failed to load meal logs from storage', e);
+    console.warn('Failed to parse meal logs from storage, reverting to initial', e);
   }
+  return getInitialMealLogs();
+}
+
+function getInitialMealLogs(): MealLog[] {
   const todayStr = new Date().toISOString().split('T')[0];
   return [
     {

@@ -114,21 +114,25 @@ export function computeRecipeMacroMatch(
   recipe: Recipe,
   remainingBudget: MacroNutrients
 ): number {
-  // Calculates compatibility score (0 - 100) based on how cleanly it fulfills remaining budget
-  // without heavily blowing past calories, protein, carbs, or fats
+  if (!recipe) return 0;
+
+  // If user has already reached or exceeded daily calories, heavily deprioritize high-calorie meals
+  if (remainingBudget.calories <= 0) {
+    return Math.max(5, Math.round(30 - Math.min(25, recipe.calories / 30)));
+  }
+
   let score = 100;
 
   // Calorie alignment
-  if (remainingBudget.calories > 0) {
-    const calDiff = Math.abs(recipe.calories - remainingBudget.calories);
-    const calPenalty = Math.min(40, (calDiff / remainingBudget.calories) * 35);
-    score -= calPenalty;
-  }
+  const calDiff = Math.abs(recipe.calories - remainingBudget.calories);
+  const calPenalty = Math.min(50, (calDiff / remainingBudget.calories) * 45);
+  score -= calPenalty;
 
   // Protein fulfillment bonus
   if (remainingBudget.proteinG > 0) {
-    if (recipe.proteinG >= remainingBudget.proteinG * 0.5) {
-      score += 10;
+    const proteinRatio = recipe.proteinG / remainingBudget.proteinG;
+    if (proteinRatio >= 0.4 && proteinRatio <= 1.2) {
+      score += 12;
     }
   }
 

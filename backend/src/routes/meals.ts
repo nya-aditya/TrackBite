@@ -115,11 +115,17 @@ router.post('/:userId', async (req: Request, res: Response) => {
 
     const foodMap = new Map(dbFoods.map((f) => [f.id, f]));
 
+    const missingFood = items.find((i) => !foodMap.has(i.foodItemId));
+    if (missingFood) {
+      res.status(404).json({
+        error: 'NotFoundError',
+        message: `Food item with id '${missingFood.foodItemId}' not found`,
+      });
+      return;
+    }
+
     const mealItemsData = items.map((item) => {
-      const food = foodMap.get(item.foodItemId);
-      if (!food) {
-        throw new Error(`Food item with id ${item.foodItemId} not found`);
-      }
+      const food = foodMap.get(item.foodItemId)!;
       return {
         foodItemId: food.id,
         quantity: item.quantity,
@@ -167,7 +173,11 @@ router.delete('/logs/:id', async (req: Request, res: Response) => {
       where: { id },
     });
     res.json({ success: true, message: `Meal log ${id} deleted` });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      res.status(404).json({ error: 'NotFoundError', message: `Meal log with id '${req.params.id}' not found` });
+      return;
+    }
     res.status(500).json({ error: 'Failed to delete meal log', message: (error as Error).message });
   }
 });

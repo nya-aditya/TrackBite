@@ -14,13 +14,18 @@ const telemetryPayloadSchema = z.object({
   recoveryScore: z.number().min(0).max(100).optional().nullable(),
   activeCaloriesBurned: z.number().int().min(0).optional().nullable(),
   steps: z.number().int().min(0).optional().nullable(),
-  source: z.string().default('whoop'),
+  source: z.string().default('fitbit'),
 });
 
 // GET /api/telemetry/:userId - Fetch telemetry records
 router.get('/:userId', async (req: Request, res: Response) => {
   try {
-    const userId = String(req.params.userId);
+    const userId = String(req.params.userId).trim();
+    if (!userId) {
+      res.status(400).json({ error: 'ValidationError', message: 'userId is required' });
+      return;
+    }
+
     const { date, days } = req.query;
 
     if (date && typeof date === 'string') {
@@ -36,7 +41,9 @@ router.get('/:userId', async (req: Request, res: Response) => {
       return;
     }
 
-    const limit = days ? parseInt(days as string, 10) : 14;
+    const parsedDays = days ? parseInt(days as string, 10) : 14;
+    const limit = Math.max(1, Math.min(parsedDays, 90)); // clamp between 1 and 90 days
+
     const history = await prisma.dailyTelemetry.findMany({
       where: { userId },
       orderBy: { date: 'desc' },

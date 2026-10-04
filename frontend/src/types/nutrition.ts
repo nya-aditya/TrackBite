@@ -64,3 +64,19 @@ export interface DailyAdaptiveTarget {
   strainAdjustmentKcal: number;
   explanation: string;
 }
+
+export function isValidMealType(type: string): type is MealType {
+  return ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'].includes(type as MealType);
+}
+
+export function calculateMealTotals(items: readonly MealItem[]): MacroNutrients {
+  return items.reduce(
+    (acc, item) => ({
+      calories: Math.round((acc.calories + item.calories) * 10) / 10,
+      proteinG: Math.round((acc.proteinG + item.proteinG) * 10) / 10,
+      carbsG: Math.round((acc.carbsG + item.carbsG) * 10) / 10,
+      fatG: Math.round((acc.fatG + item.fatG) * 10) / 10,
+    }),
+    { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 }
+  );
+}

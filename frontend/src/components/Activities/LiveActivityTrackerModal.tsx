@@ -38,6 +38,18 @@ export const LiveActivityTrackerModal: React.FC<LiveActivityTrackerModalProps> =
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const simStepRef = useRef(0);
 
+  // Clean up and reset tracking if modal is closed
+  useEffect(() => {
+    if (!isOpen) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      setIsRecording(false);
+      setIsPaused(false);
+    }
+  }, [isOpen]);
+
   // Timer loop
   useEffect(() => {
     if (isRecording && !isPaused) {

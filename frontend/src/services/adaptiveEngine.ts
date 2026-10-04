@@ -3,9 +3,13 @@ import { FitbitMetricSnapshot } from '../types/wearable';
 import { DailyAdaptiveTarget } from '../types/nutrition';
 
 export function calculateBMR(user: UserProfile): number {
+  const weight = Math.max(30, Number(user.weightKg) || 70);
+  const height = Math.max(100, Number(user.heightCm) || 170);
+  const age = Math.max(14, Number(user.age) || 30);
   const gender = (user.gender || '').toLowerCase();
   const s = gender === 'male' ? 5 : gender === 'female' ? -161 : -78;
-  return Math.round(10 * user.weightKg + 6.25 * user.heightCm - 5 * user.age + s);
+  const rawBmr = 10 * weight + 6.25 * height - 5 * age + s;
+  return Math.max(1000, Math.round(rawBmr));
 }
 
 export function getActivityMultiplier(activityLevel: UserProfile['activityLevel']): number {
@@ -118,9 +122,9 @@ export function computeAdaptivePlan(
     strainExplanationParts.push(`+${readinessBufferProteinG}g protein for low readiness (${readiness}/100)`);
   }
 
-  const adjustedCalories = baselineCalories + sleepBuffer.bufferKcal + strainAdjustmentKcal;
-  const adjustedProteinG = baselineProteinG + sleepBuffer.bufferProteinG + readinessBufferProteinG;
-  const adjustedFatG = Math.round((adjustedCalories * 0.27) / 9);
+  const adjustedCalories = Math.max(1200, baselineCalories + sleepBuffer.bufferKcal + strainAdjustmentKcal);
+  const adjustedProteinG = Math.max(40, baselineProteinG + sleepBuffer.bufferProteinG + readinessBufferProteinG);
+  const adjustedFatG = Math.max(30, Math.round((adjustedCalories * 0.27) / 9));
 
   const adjRemainingKcal = adjustedCalories - (adjustedProteinG * 4 + adjustedFatG * 9);
   const adjustedCarbsG = Math.max(50, Math.round(adjRemainingKcal / 4));
@@ -131,13 +135,13 @@ export function computeAdaptivePlan(
   }
 
   return {
-    baselineCalories,
+    baselineCalories: Math.max(1200, baselineCalories),
     adjustedCalories,
-    baselineProteinG,
+    baselineProteinG: Math.max(40, baselineProteinG),
     adjustedProteinG,
-    baselineCarbsG,
+    baselineCarbsG: Math.max(50, baselineCarbsG),
     adjustedCarbsG,
-    baselineFatG,
+    baselineFatG: Math.max(30, baselineFatG),
     adjustedFatG,
     sleepBufferKcal: sleepBuffer.bufferKcal,
     sleepBufferProteinG: sleepBuffer.bufferProteinG,

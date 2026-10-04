@@ -69,21 +69,31 @@ export const INITIAL_WEARABLE_DEVICE: WearableDevice = {
   lastSyncTime: 'Just now',
 };
 
+export function clampBattery(percent: number): number {
+  if (isNaN(percent)) return 100;
+  return Math.max(0, Math.min(100, Math.round(percent)));
+}
+
+export function formatSyncTimestamp(date: Date = new Date()): string {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
 export function createSnapshotFromPreset(preset: TelemetryPreset): FitbitMetricSnapshot {
-  const readinessState = preset.readinessScore >= 70 ? 'optimal' : preset.readinessScore >= 40 ? 'moderate' : 'low';
-  const totalMinutes = Math.round(preset.sleepHours * 60);
+  const readinessScore = Math.max(0, Math.min(100, Math.round(preset.readinessScore)));
+  const readinessState = readinessScore >= 70 ? 'optimal' : readinessScore >= 40 ? 'moderate' : 'low';
+  const totalMinutes = Math.max(0, Math.round(preset.sleepHours * 60));
 
   return {
     timestamp: new Date().toISOString(),
     readiness: {
-      score: preset.readinessScore,
+      score: readinessScore,
       state: readinessState,
-      restingHeartRate: preset.restingHeartRate,
-      hrvRmssd: preset.hrv,
+      restingHeartRate: Math.max(30, preset.restingHeartRate),
+      hrvRmssd: Math.max(5, preset.hrv),
     },
     sleep: {
       totalDurationMinutes: totalMinutes,
-      sleepScore: Math.round(Math.min(100, (preset.sleepHours / 8) * 90)),
+      sleepScore: Math.max(0, Math.min(100, Math.round((preset.sleepHours / 8) * 90))),
       deepMinutes: Math.round(totalMinutes * 0.22),
       remMinutes: Math.round(totalMinutes * 0.24),
       lightMinutes: Math.round(totalMinutes * 0.46),
@@ -91,13 +101,13 @@ export function createSnapshotFromPreset(preset: TelemetryPreset): FitbitMetricS
       efficiencyPercent: preset.sleepHours >= 7.5 ? 93 : preset.sleepHours >= 6 ? 82 : 71,
     },
     activity: {
-      activeZoneMinutes: preset.activeZoneMinutes,
+      activeZoneMinutes: Math.max(0, preset.activeZoneMinutes),
       fatBurnMinutes: Math.max(10, preset.activeZoneMinutes * 2),
       cardioMinutes: Math.round(preset.activeZoneMinutes * 0.7),
       peakMinutes: Math.round(preset.activeZoneMinutes * 0.3),
-      steps: 8500 + preset.activeZoneMinutes * 75,
-      totalCaloriesBurned: 2100 + preset.activeCalories,
-      activeCalories: preset.activeCalories,
+      steps: Math.max(0, 8500 + preset.activeZoneMinutes * 75),
+      totalCaloriesBurned: Math.max(0, 2100 + preset.activeCalories),
+      activeCalories: Math.max(0, preset.activeCalories),
     },
   };
 }
